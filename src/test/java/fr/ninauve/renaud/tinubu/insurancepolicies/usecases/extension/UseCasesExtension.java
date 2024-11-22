@@ -1,6 +1,7 @@
 package fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension;
 
 import fr.ninauve.renaud.tinubu.insurancepolicies.InsurancepoliciesApplication;
+import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.client.ApplicationHttpClient;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
@@ -10,15 +11,17 @@ import org.springframework.test.util.TestSocketUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachCallback {
-    public static final String DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
+    private static final String DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
+    private static final String DB_NAME = "insurance";
     private static final String DB_USER_NAME = "paul";
     private static final String DB_USER_PASSWORD = "grey";
 
     private static final PostgreSQLContainer<?> DB_CONTAINER = new PostgreSQLContainer<>("postgres:16.4")
+            .withDatabaseName(DB_NAME)
             .withUsername(DB_USER_NAME)
             .withPassword(DB_USER_PASSWORD);
 
-    private static UseCaseDSL dsl;
+    private static ApplicationHttpClient insurancePoliciesClient;
 
     private static void init() {
         int serverPort = TestSocketUtils.findAvailableTcpPort();
@@ -33,18 +36,16 @@ public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachC
 
         ConfigurableApplicationContext insurancePoliciesContext = SpringApplication.run(InsurancepoliciesApplication.class);
 
-        UseCasesExtension.dsl = UseCaseDSL.builder()
-                .baseUrl("http://localhost:"+serverPort)
-                .build();
+        UseCasesExtension.insurancePoliciesClient = new ApplicationHttpClient("http://localhost:" + serverPort);
     }
 
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext extensionContext) throws Exception {
         if (testInstance instanceof UseCase useCase) {
-            if (dsl == null) {
+            if (insurancePoliciesClient == null) {
                 init();
             }
-            useCase.setUseCaseDSL(dsl);
+            useCase.setInsurancePoliciesClient(insurancePoliciesClient);
         } else {
             throw new IllegalArgumentException("test instance should implement UseCase");
         }
@@ -52,6 +53,5 @@ public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachC
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
-        dsl.reset();
     }
 }
