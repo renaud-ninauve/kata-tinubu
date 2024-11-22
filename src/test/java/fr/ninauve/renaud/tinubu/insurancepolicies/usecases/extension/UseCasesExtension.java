@@ -1,7 +1,7 @@
 package fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension;
 
 import fr.ninauve.renaud.tinubu.insurancepolicies.InsurancepoliciesApplication;
-import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.client.ApplicationHttpClient;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
@@ -9,6 +9,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.util.TestSocketUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.Properties;
 
 public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachCallback {
     private static final String DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect";
@@ -21,8 +26,9 @@ public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachC
             .withUsername(DB_USER_NAME)
             .withPassword(DB_USER_PASSWORD);
 
-    private static ApplicationHttpClient insurancePoliciesClient;
+    private static String insurancePoliciesUri;
 
+    @SneakyThrows
     private static void init() {
         int serverPort = TestSocketUtils.findAvailableTcpPort();
         System.setProperty("server.port", "" + serverPort);
@@ -36,16 +42,16 @@ public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachC
 
         ConfigurableApplicationContext insurancePoliciesContext = SpringApplication.run(InsurancepoliciesApplication.class);
 
-        UseCasesExtension.insurancePoliciesClient = new ApplicationHttpClient("http://localhost:" + serverPort);
+        UseCasesExtension.insurancePoliciesUri = "http://localhost:" + serverPort;
     }
 
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext extensionContext) throws Exception {
         if (testInstance instanceof UseCase useCase) {
-            if (insurancePoliciesClient == null) {
+            if (insurancePoliciesUri == null) {
                 init();
             }
-            useCase.setInsurancePoliciesClient(insurancePoliciesClient);
+            useCase.setApplicationBaseUri(insurancePoliciesUri);
         } else {
             throw new IllegalArgumentException("test instance should implement UseCase");
         }
@@ -53,5 +59,11 @@ public class UseCasesExtension implements TestInstancePostProcessor, BeforeEachC
 
     @Override
     public void beforeEach(ExtensionContext extensionContext) throws Exception {
+        java.util.Properties props = new Properties();
+        props.setProperty("user", DB_USER_NAME);
+        props.setProperty("password", DB_USER_PASSWORD);
+        Connection conn = DriverManager.getConnection(DB_CONTAINER.getJdbcUrl(), props);
+        Statement statement = conn.createStatement();
+        statement.executeUpdate("TRUNCATE TABLE insurance_policies");
     }
 }
