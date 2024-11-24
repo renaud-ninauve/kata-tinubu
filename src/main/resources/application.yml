@@ -6,6 +6,11 @@ spring:
     rest:
       base-path: /
 
-  sql:
-    init:
-      mode: always
+#  sql:
+#    init:
+#      mode: always
+
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
