@@ -13,12 +13,18 @@ Important endpoints are :
 - /profile/insurancePolicies
   - rest endpoints documentation in alps format
 
-# build docker image
+# build docker image from Dockerfile
 
 mvn clean install
 docker build -t insurancepolicies .
 
+# build image with spring boot plugin
+
+mvn spring-boot:build-image
+
 # run application
+
+Build the docker image, then do :
 
 docker-compose up -d
 
