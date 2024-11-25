@@ -32,7 +32,7 @@ class InsurancePolicyTest {
             .endDate(END_DATE)
             .build();
 
-    private static String INSURANCE_POLICY_JSON = """
+    private static final String INSURANCE_POLICY_JSON = """
             {
                 "id": ${id},
                 "name": "${name}",
