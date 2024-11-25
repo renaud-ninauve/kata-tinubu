@@ -35,3 +35,9 @@ A postgres database will be started on port 5432.
 # stop application
 
 docker-compose down
+
+# how to add a new field in db ?
+
+Database schema is managed by flyway.
+
+To modify the schema, add an sql script in resources/migration.
