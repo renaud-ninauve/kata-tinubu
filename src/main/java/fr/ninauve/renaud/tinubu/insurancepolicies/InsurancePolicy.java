@@ -1,6 +1,8 @@
 package fr.ninauve.renaud.tinubu.insurancepolicies;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +22,7 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class InsurancePolicy {
 
-    enum Status {
+    public enum Status {
         ACTIVE, INACTIVE
     }
 
@@ -33,14 +35,19 @@ public class InsurancePolicy {
     private Long id;
 
     @Column
+//    @NotBlank(message = "name is mandatory and should not be blank")
     private String name;
+
     @Column
+//    @NotNull(message = "status is mandatory and should not be one of ACTIVE, INACTIVE")
     private Status status;
 
-    @Column()
+    @Column
+//    @NotNull(message = "startDate is mandatory")
     private Instant startDate;
 
     @Column
+//    @NotNull(message = "endDate is mandatory")
     private Instant endDate;
 
     @CreatedDate
