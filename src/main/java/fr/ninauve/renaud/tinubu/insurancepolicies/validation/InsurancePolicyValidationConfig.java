@@ -11,4 +11,9 @@ public class InsurancePolicyValidationConfig {
     Validator beforeCreateInsurancePolicyValidator(InsurancePolicyValidator insurancePolicyValidator) {
         return insurancePolicyValidator;
     }
+
+    @Bean
+    Validator beforeSaveInsurancePolicyValidator(InsurancePolicyValidator insurancePolicyValidator) {
+        return insurancePolicyValidator;
+    }
 }

@@ -38,6 +38,22 @@ public class UpdateTest implements UseCase {
                 .body("name", is(equalTo("updated-policy")));
     }
 
+    @Test
+    void fail_when_name_is_blank() {
+        String insurancePolicyUri = createInsurancePolicy();
+        String insurancePolicy = getInsurancePolicy(insurancePolicyUri);
+        String updatedInsurancePolicy = insurancePolicy.replace("my-policy", "");
+
+        given()
+                .baseUri(insurancePolicyUri)
+                .contentType(ContentType.JSON)
+                .body(updatedInsurancePolicy)
+                .when()
+                .put()
+                .then()
+                .statusCode(400);
+    }
+
     private String createInsurancePolicy() {
         return given()
                 .baseUri(applicationBaseUri)

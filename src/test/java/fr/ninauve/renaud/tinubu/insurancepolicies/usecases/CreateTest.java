@@ -75,6 +75,27 @@ public class CreateTest implements UseCase {
     }
 
     @Test
+    void fail_when_name_is_blank() {
+        given()
+                .baseUri(applicationBaseUri)
+                .basePath("/insurancePolicies")
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "name": "",
+                            "status": "ACTIVE",
+                            "startDate": "2024-11-24T14:41:52.123456Z",
+                            "endDate": "2025-11-24T14:41:52.123456Z"
+                        }
+                        """)
+                .when()
+                .post()
+                .then()
+                .statusCode(400)
+                .body("errors.property", hasItem("name"));
+    }
+
+    @Test
     void create_should_ignore_id_field() {
         final long idToIgnore = 666;
 
