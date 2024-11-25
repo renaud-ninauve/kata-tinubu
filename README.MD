@@ -18,10 +18,6 @@ Important endpoints are :
 mvn clean install
 docker build -t insurancepolicies .
 
-# build image with spring boot plugin
-
-mvn spring-boot:build-image
-
 # run application
 
 Build the docker image, then do :
