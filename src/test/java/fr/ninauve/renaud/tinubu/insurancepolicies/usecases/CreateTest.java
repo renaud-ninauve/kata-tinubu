@@ -3,8 +3,6 @@ package fr.ninauve.renaud.tinubu.insurancepolicies.usecases;
 import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension.UseCase;
 import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension.UseCasesExtension;
 import io.restassured.http.ContentType;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,14 +98,13 @@ public class CreateTest implements UseCase {
                 .extract()
                 .path("_links.self.href");
 
-        ExtractableResponse<Response> response = given()
+        given()
                 .baseUri(createdInsurancePolicyUri)
                 .when()
                 .get()
                 .then()
                 .statusCode(200)
-                .body("id", is(not(equalTo(idToIgnore)))).extract();
-        System.out.println(response.body().asPrettyString());
+                .body("id", is(not(equalTo(idToIgnore))));
     }
 
     @Override
