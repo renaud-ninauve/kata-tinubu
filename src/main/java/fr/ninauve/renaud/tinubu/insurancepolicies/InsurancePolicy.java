@@ -20,6 +20,10 @@ import java.time.Instant;
 @EntityListeners(AuditingEntityListener.class)
 public class InsurancePolicy {
 
+    enum Status {
+        ACTIVE, INACTIVE
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "insurance_policies_seq")
     @SequenceGenerator(
@@ -31,7 +35,7 @@ public class InsurancePolicy {
     @Column
     private String name;
     @Column
-    private String status;
+    private Status status;
 
     @Column()
     //@Temporal(TemporalType.TIMESTAMP)

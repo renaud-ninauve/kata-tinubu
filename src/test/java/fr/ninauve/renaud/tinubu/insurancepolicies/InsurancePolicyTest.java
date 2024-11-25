@@ -1,5 +1,6 @@
 package fr.ninauve.renaud.tinubu.insurancepolicies;
 
+import fr.ninauve.renaud.tinubu.insurancepolicies.InsurancePolicy.Status;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -16,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InsurancePolicyTest {
     private static final long ID = 12345678901L;
     private static final String NAME = "my insurance policy";
-    private static final String STATUS = "ACTIVE";
+    private static final Status STATUS = Status.ACTIVE;
+    private static final String STATUS_STRING = "ACTIVE";
     private static final String START_DATE_STRING = "2024-11-24T14:41:52.123456Z";
     private static final Instant START_DATE = Instant.from(DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(START_DATE_STRING));
     private static final String END_DATE_STRING = "2025-04-01T07:33:24.123456Z";
@@ -40,7 +42,7 @@ class InsurancePolicyTest {
             }
             """.replace("${id}", "" + ID)
             .replace("${name}", NAME)
-            .replace("${status}", STATUS)
+            .replace("${status}", STATUS_STRING)
             .replace("${startDate}", START_DATE_STRING)
             .replace("${endDate}", END_DATE_STRING);
 
@@ -53,7 +55,7 @@ class InsurancePolicyTest {
 
         assertThat(actual).extractingJsonPathNumberValue("@.id").isEqualTo(ID);
         assertThat(actual).extractingJsonPathStringValue("@.name").isEqualTo(NAME);
-        assertThat(actual).extractingJsonPathStringValue("@.status").isEqualTo(STATUS);
+        assertThat(actual).extractingJsonPathStringValue("@.status").isEqualTo(STATUS_STRING);
         assertThat(actual).extractingJsonPathStringValue("@.startDate").isEqualTo(START_DATE_STRING);
         assertThat(actual).extractingJsonPathStringValue("@.endDate").isEqualTo(END_DATE_STRING);
     }
