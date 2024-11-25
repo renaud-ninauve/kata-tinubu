@@ -38,11 +38,9 @@ public class InsurancePolicy {
     private Status status;
 
     @Column()
-    //@Temporal(TemporalType.TIMESTAMP)
     private Instant startDate;
 
     @Column
-    //@Temporal(TemporalType.TIMESTAMP)
     private Instant endDate;
 
     @CreatedDate
