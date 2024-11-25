@@ -5,20 +5,24 @@ import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension.UseCasesExt
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.notNull;
 
 @ExtendWith(UseCasesExtension.class)
 public class CreateTest implements UseCase {
+    private static final String DATE_PATTERN = "\\d\\d\\d\\d-\\d\\d-\\d\\d";
+    private static final String TIME_PATTERN = "\\d\\d:\\d\\d:\\d\\d\\.\\d*";
+    private static final String DATE_TIME_PATTERN = DATE_PATTERN + "T" + TIME_PATTERN + "Z";
+
     private String applicationBaseUri;
 
     @Test
-    void create() {
+    void create_all_fields() {
         final String createdInsurancePolicyUri = given()
                 .baseUri(applicationBaseUri)
                 .basePath("/insurancePolicies")
@@ -48,8 +52,8 @@ public class CreateTest implements UseCase {
                 .body("status", is(equalTo("ACTIVE")))
                 .body("startDate", is(equalTo("2024-11-24T14:41:52.123456Z")))
                 .body("endDate", is(equalTo("2025-11-24T14:41:52.123456Z")))
-                .body("createdDate", is(notNull()))
-                .body("lastModifiedDate", is(notNull()))
+                .body("createdDate", is(Matchers.matchesPattern(DATE_TIME_PATTERN)))
+                .body("lastModifiedDate", is(Matchers.matchesPattern(DATE_TIME_PATTERN)))
                 .extract();
 
         System.out.println(getResponse.body().asPrettyString());
