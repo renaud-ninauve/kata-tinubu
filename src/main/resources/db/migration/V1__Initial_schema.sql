@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS insurance_policies;
 CREATE TABlE insurance_policies (
     id                  BIGSERIAL PRIMARY KEY,
     name                TEXT NOT NULL,
@@ -9,5 +8,4 @@ CREATE TABlE insurance_policies (
     last_modified_date  TIMESTAMP NOT NULL
 );
 
-DROP SEQUENCE IF EXISTS insurance_policies_seq;
 CREATE SEQUENCE insurance_policies_seq INCREMENT 5;

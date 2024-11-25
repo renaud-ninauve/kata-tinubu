@@ -5,7 +5,3 @@ spring:
   data:
     rest:
       base-path: /
-
-  sql:
-    init:
-      mode: always
