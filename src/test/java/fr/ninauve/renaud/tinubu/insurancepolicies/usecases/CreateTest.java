@@ -3,13 +3,14 @@ package fr.ninauve.renaud.tinubu.insurancepolicies.usecases;
 import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension.UseCase;
 import fr.ninauve.renaud.tinubu.insurancepolicies.usecases.extension.UseCasesExtension;
 import io.restassured.http.ContentType;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 
 @ExtendWith(UseCasesExtension.class)
@@ -73,6 +74,40 @@ public class CreateTest implements UseCase {
                 .then()
                 .statusCode(400)
                 .body("errors.property", hasItem("name"));
+    }
+
+    @Test
+    void create_should_ignore_id_field() {
+        final long idToIgnore = 666;
+
+        final String createdInsurancePolicyUri = given()
+                .baseUri(applicationBaseUri)
+                .basePath("/insurancePolicies")
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                            "id": ${id},
+                            "name": "my-policy",
+                            "status": "ACTIVE",
+                            "startDate": "2024-11-24T14:41:52.123456Z",
+                            "endDate": "2025-11-24T14:41:52.123456Z"
+                        }
+                        """.replace("${id}", "" + idToIgnore))
+                .when()
+                .post()
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("_links.self.href");
+
+        ExtractableResponse<Response> response = given()
+                .baseUri(createdInsurancePolicyUri)
+                .when()
+                .get()
+                .then()
+                .statusCode(200)
+                .body("id", is(not(equalTo(idToIgnore)))).extract();
+        System.out.println(response.body().asPrettyString());
     }
 
     @Override
